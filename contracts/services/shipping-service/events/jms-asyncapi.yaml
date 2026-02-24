@@ -1,0 +1,70 @@
+asyncapi: 3.0.0
+info:
+  title: Shipping Service JMS Messages
+  version: 1.1.0
+defaultContentType: application/json
+channels:
+  shippingDispatchCommandQueue:
+    address: queue.shipping.dispatch.command
+    messages:
+      dispatchCommand:
+        $ref: '#/components/messages/DispatchCommand'
+  orderFulfillmentReplyQueue:
+    address: queue.order.fulfillment.reply
+    messages:
+      fulfillmentReply:
+        $ref: '#/components/messages/FulfillmentReply'
+operations:
+  receiveDispatchCommand:
+    action: receive
+    summary: Receives dispatch commands from upstream systems
+    channel:
+      $ref: '#/channels/shippingDispatchCommandQueue'
+    messages:
+      - $ref: '#/channels/shippingDispatchCommandQueue/messages/dispatchCommand'
+  sendFulfillmentReply:
+    action: send
+    summary: Sends fulfillment reply correlated to received dispatch command
+    channel:
+      $ref: '#/channels/orderFulfillmentReplyQueue'
+    messages:
+      - $ref: '#/channels/orderFulfillmentReplyQueue/messages/fulfillmentReply'
+components:
+  messages:
+    DispatchCommand:
+      payload:
+        type: object
+        required: [messageId, requestId, orderId, carrier, requestedAt]
+        properties:
+          messageId:
+            type: string
+          requestId:
+            type: string
+          orderId:
+            type: string
+          carrier:
+            type: string
+          requestedAt:
+            type: string
+            format: date-time
+    FulfillmentReply:
+      payload:
+        type: object
+        required: [messageId, requestId, orderId, status, repliedAt]
+        properties:
+          messageId:
+            type: string
+          requestId:
+            type: string
+          orderId:
+            type: string
+          status:
+            type: string
+            enum: [ACCEPTED, REJECTED, PARTIAL]
+          repliedAt:
+            type: string
+            format: date-time
+          trackingId:
+            type: string
+          rejectionReason:
+            type: string

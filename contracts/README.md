@@ -1,0 +1,40 @@
+# Contracts Layout
+
+This folder organizes contracts by service and protocol.
+
+## Structure
+
+- `services/<service-name>/http/openapi.yaml` for HTTP APIs
+- `services/<service-name>/graphql/schema.graphql` for GraphQL APIs
+- `services/<service-name>/rpc/*.proto` for gRPC APIs
+- `services/<service-name>/events/*asyncapi.yaml` for Kafka, JMS, MQTT topics/queues
+
+## Async Request/Reply Convention
+
+Async contracts in this demo include both event streaming and request/reply patterns.
+
+- Request channels/queues/topics usually end with `.request` or `.command`
+- Reply channels/queues/topics usually end with `.reply` or `.ack`
+- `requestId` is used in payloads to correlate replies with requests
+- Event channels (for analytics/domain propagation) remain one-way
+
+## Service Contract Index
+
+- `services/web-bff/graphql/schema.graphql`
+- `services/customer-service/http/openapi.yaml`
+- `services/customer-service/events/asyncapi.yaml`
+- `services/catalog-service/http/openapi.yaml`
+- `services/catalog-service/rpc/catalog.proto`
+- `services/order-service/http/openapi.yaml`
+- `services/order-service/events/kafka-asyncapi.yaml`
+- `services/order-service/events/jms-asyncapi.yaml`
+- `services/payment-service/http/openapi.yaml`
+- `services/payment-service/rpc/payment.proto`
+- `services/shipping-service/http/openapi.yaml`
+- `services/shipping-service/events/jms-asyncapi.yaml`
+- `services/pricing-service/rpc/pricing.proto`
+- `services/pricing-service/events/asyncapi.yaml`
+- `services/notification-service/events/kafka-asyncapi.yaml`
+- `services/notification-service/events/mqtt-asyncapi.yaml`
+- `services/analytics-pipeline/http/openapi.yaml`
+- `services/analytics-pipeline/events/consumed-events.md`

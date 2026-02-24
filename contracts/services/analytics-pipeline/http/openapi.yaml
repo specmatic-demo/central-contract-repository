@@ -1,0 +1,40 @@
+openapi: 3.0.3
+info:
+  title: Analytics Pipeline Query API
+  version: 1.0.0
+servers:
+  - url: https://analytics.internal.example.com
+paths:
+  /analytics/orders/daily-summary:
+    get:
+      summary: Returns aggregated daily order metrics
+      operationId: getDailyOrderSummary
+      parameters:
+        - name: date
+          in: query
+          required: true
+          schema:
+            type: string
+            format: date
+      responses:
+        '200':
+          description: Daily summary
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DailyOrderSummary'
+components:
+  schemas:
+    DailyOrderSummary:
+      type: object
+      required: [date, totalOrders, grossRevenue, avgOrderValue]
+      properties:
+        date:
+          type: string
+          format: date
+        totalOrders:
+          type: integer
+        grossRevenue:
+          type: number
+        avgOrderValue:
+          type: number

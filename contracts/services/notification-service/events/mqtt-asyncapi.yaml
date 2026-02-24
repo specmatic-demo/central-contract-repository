@@ -1,0 +1,66 @@
+asyncapi: 3.0.0
+info:
+  title: Notification Service MQTT Topics
+  version: 1.1.0
+defaultContentType: application/json
+channels:
+  userNotification:
+    address: notification/user
+    messages:
+      userNotification:
+        $ref: '#/components/messages/UserNotification'
+  notificationDeliveryAck:
+    address: notification/ack
+    messages:
+      deliveryAck:
+        $ref: '#/components/messages/NotificationDeliveryAck'
+operations:
+  publishUserNotification:
+    action: send
+    summary: Pushes per-user real-time notifications
+    channel:
+      $ref: '#/channels/userNotification'
+    messages:
+      - $ref: '#/channels/userNotification/messages/userNotification'
+  receiveDeliveryAck:
+    action: receive
+    summary: Receives client/device delivery acknowledgement for sent notification
+    channel:
+      $ref: '#/channels/notificationDeliveryAck'
+    messages:
+      - $ref: '#/channels/notificationDeliveryAck/messages/deliveryAck'
+components:
+  messages:
+    UserNotification:
+      payload:
+        type: object
+        required: [notificationId, requestId, title, body, priority]
+        properties:
+          notificationId:
+            type: string
+          requestId:
+            type: string
+          title:
+            type: string
+          body:
+            type: string
+          priority:
+            type: string
+            enum: [LOW, NORMAL, HIGH]
+    NotificationDeliveryAck:
+      payload:
+        type: object
+        required: [requestId, notificationId, acknowledgedAt, status]
+        properties:
+          requestId:
+            type: string
+          notificationId:
+            type: string
+          acknowledgedAt:
+            type: string
+            format: date-time
+          status:
+            type: string
+            enum: [DELIVERED, FAILED]
+          failureReason:
+            type: string

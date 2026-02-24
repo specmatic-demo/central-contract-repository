@@ -1,0 +1,66 @@
+openapi: 3.0.3
+info:
+  title: Shipping Service API
+  version: 1.0.0
+servers:
+  - url: https://shipping.internal.example.com
+paths:
+  /shipments:
+    post:
+      summary: Create shipment for an order
+      operationId: createShipment
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateShipmentRequest'
+      responses:
+        '201':
+          description: Shipment created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Shipment'
+  /shipments/{shipmentId}:
+    get:
+      summary: Get shipment status
+      operationId: getShipment
+      parameters:
+        - name: shipmentId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Shipment details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Shipment'
+components:
+  schemas:
+    CreateShipmentRequest:
+      type: object
+      required: [orderId, destinationPostalCode]
+      properties:
+        orderId:
+          type: string
+        destinationPostalCode:
+          type: string
+    Shipment:
+      type: object
+      required: [shipmentId, orderId, carrier, trackingNumber, status]
+      properties:
+        shipmentId:
+          type: string
+        orderId:
+          type: string
+        carrier:
+          type: string
+        trackingNumber:
+          type: string
+        status:
+          type: string
+          enum: [CREATED, IN_TRANSIT, DELIVERED, DELAYED]

@@ -1,0 +1,118 @@
+asyncapi: 3.0.0
+info:
+  title: Order Service Kafka Events
+  version: 1.1.0
+defaultContentType: application/json
+channels:
+  orderCreated:
+    address: order.created
+    messages:
+      orderCreated:
+        $ref: '#/components/messages/OrderCreated'
+  orderStatusChanged:
+    address: order.status.changed
+    messages:
+      orderStatusChanged:
+        $ref: '#/components/messages/OrderStatusChanged'
+  orderValidationRequest:
+    address: order.validation.request
+    messages:
+      orderValidationRequest:
+        $ref: '#/components/messages/OrderValidationRequest'
+  orderValidationReply:
+    address: order.validation.reply
+    messages:
+      orderValidationReply:
+        $ref: '#/components/messages/OrderValidationReply'
+operations:
+  publishOrderCreated:
+    action: send
+    channel:
+      $ref: '#/channels/orderCreated'
+    messages:
+      - $ref: '#/channels/orderCreated/messages/orderCreated'
+  publishOrderStatusChanged:
+    action: send
+    channel:
+      $ref: '#/channels/orderStatusChanged'
+    messages:
+      - $ref: '#/channels/orderStatusChanged/messages/orderStatusChanged'
+  receiveOrderValidationRequest:
+    action: receive
+    summary: Receives asynchronous validation requests for pending orders
+    channel:
+      $ref: '#/channels/orderValidationRequest'
+    messages:
+      - $ref: '#/channels/orderValidationRequest/messages/orderValidationRequest'
+  sendOrderValidationReply:
+    action: send
+    summary: Sends validation decision correlated to the request
+    channel:
+      $ref: '#/channels/orderValidationReply'
+    messages:
+      - $ref: '#/channels/orderValidationReply/messages/orderValidationReply'
+components:
+  messages:
+    OrderCreated:
+      payload:
+        type: object
+        required: [eventId, orderId, customerId, totalAmount, createdAt]
+        properties:
+          eventId:
+            type: string
+          orderId:
+            type: string
+          customerId:
+            type: string
+          totalAmount:
+            type: number
+          createdAt:
+            type: string
+            format: date-time
+    OrderStatusChanged:
+      payload:
+        type: object
+        required: [eventId, orderId, fromStatus, toStatus, changedAt]
+        properties:
+          eventId:
+            type: string
+          orderId:
+            type: string
+          fromStatus:
+            type: string
+          toStatus:
+            type: string
+          changedAt:
+            type: string
+            format: date-time
+    OrderValidationRequest:
+      payload:
+        type: object
+        required: [requestId, orderId, customerId, requestedAt]
+        properties:
+          requestId:
+            type: string
+          orderId:
+            type: string
+          customerId:
+            type: string
+          requestedAt:
+            type: string
+            format: date-time
+    OrderValidationReply:
+      payload:
+        type: object
+        required: [requestId, orderId, decision, repliedAt]
+        properties:
+          requestId:
+            type: string
+          orderId:
+            type: string
+          decision:
+            type: string
+            enum: [APPROVED, REJECTED]
+          reasonCode:
+            type: string
+          repliedAt:
+            type: string
+            format: date-time

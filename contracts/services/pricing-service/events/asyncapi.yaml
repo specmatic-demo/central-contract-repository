@@ -1,0 +1,98 @@
+asyncapi: 3.0.0
+info:
+  title: Pricing Service Events
+  version: 1.1.0
+defaultContentType: application/json
+channels:
+  pricingPriceChanged:
+    address: pricing.price.changed
+    messages:
+      priceChanged:
+        $ref: '#/components/messages/PriceChanged'
+  pricingQuoteRequest:
+    address: pricing.quote.request
+    messages:
+      pricingQuoteRequest:
+        $ref: '#/components/messages/PricingQuoteRequest'
+  pricingQuoteReply:
+    address: pricing.quote.reply
+    messages:
+      pricingQuoteReply:
+        $ref: '#/components/messages/PricingQuoteReply'
+operations:
+  publishPriceChanged:
+    action: send
+    summary: Published when effective price changes for a SKU
+    channel:
+      $ref: '#/channels/pricingPriceChanged'
+    messages:
+      - $ref: '#/channels/pricingPriceChanged/messages/priceChanged'
+  receivePricingQuoteRequest:
+    action: receive
+    summary: Receives asynchronous quote calculation request
+    channel:
+      $ref: '#/channels/pricingQuoteRequest'
+    messages:
+      - $ref: '#/channels/pricingQuoteRequest/messages/pricingQuoteRequest'
+  sendPricingQuoteReply:
+    action: send
+    summary: Sends quote response correlated to request
+    channel:
+      $ref: '#/channels/pricingQuoteReply'
+    messages:
+      - $ref: '#/channels/pricingQuoteReply/messages/pricingQuoteReply'
+components:
+  messages:
+    PriceChanged:
+      payload:
+        type: object
+        required: [eventId, sku, oldPrice, newPrice, currency, changedAt]
+        properties:
+          eventId:
+            type: string
+          sku:
+            type: string
+          oldPrice:
+            type: number
+          newPrice:
+            type: number
+          currency:
+            type: string
+          changedAt:
+            type: string
+            format: date-time
+    PricingQuoteRequest:
+      payload:
+        type: object
+        required: [requestId, sku, quantity, currency, requestedAt]
+        properties:
+          requestId:
+            type: string
+          sku:
+            type: string
+          quantity:
+            type: integer
+            minimum: 1
+          currency:
+            type: string
+          requestedAt:
+            type: string
+            format: date-time
+    PricingQuoteReply:
+      payload:
+        type: object
+        required: [requestId, sku, quotedPrice, currency, repliedAt]
+        properties:
+          requestId:
+            type: string
+          sku:
+            type: string
+          quotedPrice:
+            type: number
+          currency:
+            type: string
+          discountApplied:
+            type: boolean
+          repliedAt:
+            type: string
+            format: date-time

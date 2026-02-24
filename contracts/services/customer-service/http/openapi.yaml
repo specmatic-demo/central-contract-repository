@@ -1,0 +1,74 @@
+openapi: 3.0.3
+info:
+  title: Customer Service API
+  version: 1.0.0
+servers:
+  - url: https://customer.internal.example.com
+paths:
+  /customers/{customerId}:
+    get:
+      summary: Fetch a customer profile
+      operationId: getCustomer
+      parameters:
+        - name: customerId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Customer profile
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Customer'
+        '404':
+          description: Customer not found
+  /customers/{customerId}/preferences:
+    patch:
+      summary: Update customer preferences
+      operationId: updatePreferences
+      parameters:
+        - name: customerId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CustomerPreferences'
+      responses:
+        '200':
+          description: Updated preferences
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomerPreferences'
+components:
+  schemas:
+    Customer:
+      type: object
+      required: [id, email, tier, preferences]
+      properties:
+        id:
+          type: string
+        email:
+          type: string
+          format: email
+        tier:
+          type: string
+          enum: [STANDARD, GOLD, PLATINUM]
+        preferences:
+          $ref: '#/components/schemas/CustomerPreferences'
+    CustomerPreferences:
+      type: object
+      required: [newsletter, language]
+      properties:
+        newsletter:
+          type: boolean
+        language:
+          type: string
+          example: en-US

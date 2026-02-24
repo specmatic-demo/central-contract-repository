@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+package pricing.v1;
+
+service PricingService {
+  rpc QuotePrice (QuotePriceRequest) returns (QuotePriceResponse);
+}
+
+message QuotePriceRequest {
+  string sku = 1;
+  int32 quantity = 2;
+  string customer_tier = 3;
+}
+
+message QuotePriceResponse {
+  string sku = 1;
+  int32 quantity = 2;
+  double unit_price = 3;
+  double total_price = 4;
+  string currency = 5;
+}

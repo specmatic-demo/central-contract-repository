@@ -1,0 +1,97 @@
+asyncapi: 3.0.0
+info:
+  title: Customer Service Events
+  version: 1.1.0
+defaultContentType: application/json
+channels:
+  customerProfileUpdated:
+    address: customer.profile.updated
+    messages:
+      customerProfileUpdated:
+        $ref: '#/components/messages/CustomerProfileUpdated'
+  customerPreferenceSyncRequest:
+    address: customer.preference.sync.request
+    messages:
+      customerPreferenceSyncRequest:
+        $ref: '#/components/messages/CustomerPreferenceSyncRequest'
+  customerPreferenceSyncReply:
+    address: customer.preference.sync.reply
+    messages:
+      customerPreferenceSyncReply:
+        $ref: '#/components/messages/CustomerPreferenceSyncReply'
+operations:
+  publishCustomerProfileUpdated:
+    action: send
+    summary: Published when customer profile fields are updated
+    channel:
+      $ref: '#/channels/customerProfileUpdated'
+    messages:
+      - $ref: '#/channels/customerProfileUpdated/messages/customerProfileUpdated'
+  receiveCustomerPreferenceSyncRequest:
+    action: receive
+    summary: Receives request to fetch latest preference snapshot for a customer
+    channel:
+      $ref: '#/channels/customerPreferenceSyncRequest'
+    messages:
+      - $ref: '#/channels/customerPreferenceSyncRequest/messages/customerPreferenceSyncRequest'
+  sendCustomerPreferenceSyncReply:
+    action: send
+    summary: Sends preference snapshot reply correlated to sync request
+    channel:
+      $ref: '#/channels/customerPreferenceSyncReply'
+    messages:
+      - $ref: '#/channels/customerPreferenceSyncReply/messages/customerPreferenceSyncReply'
+components:
+  messages:
+    CustomerProfileUpdated:
+      name: CustomerProfileUpdated
+      payload:
+        type: object
+        required: [eventId, customerId, updatedAt, tier]
+        properties:
+          eventId:
+            type: string
+          customerId:
+            type: string
+          updatedAt:
+            type: string
+            format: date-time
+          tier:
+            type: string
+            enum: [STANDARD, GOLD, PLATINUM]
+    CustomerPreferenceSyncRequest:
+      name: CustomerPreferenceSyncRequest
+      payload:
+        type: object
+        required: [requestId, customerId, requestedAt]
+        properties:
+          requestId:
+            type: string
+          customerId:
+            type: string
+          requestedAt:
+            type: string
+            format: date-time
+    CustomerPreferenceSyncReply:
+      name: CustomerPreferenceSyncReply
+      payload:
+        type: object
+        required: [requestId, customerId, status, syncedAt, preferenceVersion]
+        properties:
+          requestId:
+            type: string
+          customerId:
+            type: string
+          status:
+            type: string
+            enum: [SUCCESS, NOT_FOUND]
+          syncedAt:
+            type: string
+            format: date-time
+          preferenceVersion:
+            type: integer
+            minimum: 1
+          preferences:
+            type: object
+            additionalProperties:
+              type: string

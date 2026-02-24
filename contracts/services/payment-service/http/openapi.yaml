@@ -1,0 +1,53 @@
+openapi: 3.0.3
+info:
+  title: Payment Service API
+  version: 1.0.0
+servers:
+  - url: https://payment.internal.example.com
+paths:
+  /payments/authorize:
+    post:
+      summary: Authorize a payment
+      operationId: authorizePayment
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PaymentAuthorizationRequest'
+      responses:
+        '200':
+          description: Authorization result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentAuthorizationResult'
+components:
+  schemas:
+    PaymentAuthorizationRequest:
+      type: object
+      required: [orderId, amount, currency, paymentMethodId]
+      properties:
+        orderId:
+          type: string
+        amount:
+          type: number
+        currency:
+          type: string
+          minLength: 3
+          maxLength: 3
+        paymentMethodId:
+          type: string
+    PaymentAuthorizationResult:
+      type: object
+      required: [paymentId, orderId, status, authorizedAmount]
+      properties:
+        paymentId:
+          type: string
+        orderId:
+          type: string
+        status:
+          type: string
+          enum: [AUTHORIZED, DECLINED]
+        authorizedAmount:
+          type: number
