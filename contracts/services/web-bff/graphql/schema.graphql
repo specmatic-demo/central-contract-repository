@@ -4,9 +4,9 @@ schema {
 }
 
 type Query {
-  customer(id: ID!): Customer
+  customer(id: String!): Customer
   catalogItems(category: String, limit: Int = 10): [CatalogItem!]!
-  order(id: ID!): Order
+  order(id: String!): Order
   quotePrice(sku: String!, quantity: Int!): PriceQuote!
 }
 
@@ -29,7 +29,7 @@ type CatalogItem {
 
 type Order {
   id: ID!
-  customerId: ID!
+  customerId: String!
   status: String!
   totalAmount: Float!
 }
@@ -42,7 +42,7 @@ type PriceQuote {
 }
 
 input PlaceOrderInput {
-  customerId: ID!
+  customerId: String!
   sku: String!
   quantity: Int!
   paymentMethodId: String!
