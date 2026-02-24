@@ -25,7 +25,7 @@ channels:
         $ref: '#/components/messages/NotificationDeliveryAck'
 operations:
   publishUserNotification:
-    action: send
+    action: receive
     summary: Pushes per-user real-time notifications
     channel:
       $ref: '#/channels/userNotification'
