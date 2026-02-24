@@ -22,6 +22,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/PaymentAuthorizationResult'
+        '400':
+          description: Invalid payment authorization request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
 components:
   schemas:
     PaymentAuthorizationRequest:
@@ -51,3 +57,9 @@ components:
           enum: [AUTHORIZED, DECLINED]
         authorizedAmount:
           type: number
+    ErrorResponse:
+      type: object
+      required: [error]
+      properties:
+        error:
+          type: string
