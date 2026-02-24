@@ -5,7 +5,7 @@ info:
 defaultContentType: application/json
 servers:
   mqttServer:
-    host: localhost:1883
+    host: tcp://localhost:1883
     protocol: mqtt
 
 channels:
