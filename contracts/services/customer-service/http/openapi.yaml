@@ -47,6 +47,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/CustomerPreferences'
+        '400':
+          description: Invalid preferences payload
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
 components:
   schemas:
     Customer:
@@ -72,3 +78,9 @@ components:
         language:
           type: string
           example: en-US
+    ErrorResponse:
+      type: object
+      required: [error]
+      properties:
+        error:
+          type: string
