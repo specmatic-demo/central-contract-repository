@@ -1,7 +1,7 @@
 asyncapi: 3.0.0
 info:
   title: Pricing Service Events
-  version: 1.1.0
+  version: 1.2.0
 defaultContentType: application/json
 channels:
   pricingPriceChanged:
@@ -19,6 +19,16 @@ channels:
     messages:
       pricingQuoteReply:
         $ref: '#/components/messages/PricingQuoteReply'
+  pricingBulkQuoteRequest:
+    address: pricing.quote.bulk.request
+    messages:
+      pricingBulkQuoteRequest:
+        $ref: '#/components/messages/PricingBulkQuoteRequest'
+  pricingBulkQuoteReply:
+    address: pricing.quote.bulk.reply
+    messages:
+      pricingBulkQuoteReply:
+        $ref: '#/components/messages/PricingBulkQuoteReply'
 operations:
   publishPriceChanged:
     action: send
@@ -41,6 +51,20 @@ operations:
       $ref: '#/channels/pricingQuoteReply'
     messages:
       - $ref: '#/channels/pricingQuoteReply/messages/pricingQuoteReply'
+  receivePricingBulkQuoteRequest:
+    action: receive
+    summary: Receives bulk quote request for cart pricing
+    channel:
+      $ref: '#/channels/pricingBulkQuoteRequest'
+    messages:
+      - $ref: '#/channels/pricingBulkQuoteRequest/messages/pricingBulkQuoteRequest'
+  sendPricingBulkQuoteReply:
+    action: send
+    summary: Sends bulk quote response correlated to request
+    channel:
+      $ref: '#/channels/pricingBulkQuoteReply'
+    messages:
+      - $ref: '#/channels/pricingBulkQuoteReply/messages/pricingBulkQuoteReply'
 components:
   messages:
     PriceChanged:
@@ -96,3 +120,53 @@ components:
           repliedAt:
             type: string
             format: date-time
+    PricingBulkQuoteRequest:
+      payload:
+        type: object
+        required: [requestId, currency, requestedAt, lines]
+        properties:
+          requestId:
+            type: string
+          currency:
+            type: string
+          requestedAt:
+            type: string
+            format: date-time
+          lines:
+            type: array
+            minItems: 1
+            items:
+              type: object
+              required: [sku, quantity]
+              properties:
+                sku:
+                  type: string
+                quantity:
+                  type: integer
+                  minimum: 1
+    PricingBulkQuoteReply:
+      payload:
+        type: object
+        required: [requestId, currency, repliedAt, lines, grandTotal]
+        properties:
+          requestId:
+            type: string
+          currency:
+            type: string
+          repliedAt:
+            type: string
+            format: date-time
+          lines:
+            type: array
+            items:
+              type: object
+              required: [sku, quantity, quotedPrice]
+              properties:
+                sku:
+                  type: string
+                quantity:
+                  type: integer
+                quotedPrice:
+                  type: number
+          grandTotal:
+            type: number

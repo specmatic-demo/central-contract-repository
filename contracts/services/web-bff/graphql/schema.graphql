@@ -7,11 +7,14 @@ type Query {
   customer(id: String!): Customer
   catalogItems(category: String, limit: Int = 10): [CatalogItem!]!
   order(id: String!): Order
+  orders(customerId: String!, status: String, from: String, to: String): [Order!]!
   quotePrice(sku: String!, quantity: Int!): PriceQuote!
 }
 
 type Mutation {
   placeOrder(input: PlaceOrderInput!): PlaceOrderResult!
+  cancelOrder(orderId: String!, reason: String): CancelOrderResult!
+  requestRefund(paymentId: String!, amount: Float!, reason: String!): RefundResult!
 }
 
 type Customer {
@@ -51,4 +54,16 @@ input PlaceOrderInput {
 type PlaceOrderResult {
   orderId: ID!
   status: String!
+}
+
+type CancelOrderResult {
+  orderId: ID!
+  status: String!
+}
+
+type RefundResult {
+  paymentId: ID!
+  refundId: ID!
+  status: String!
+  refundedAmount: Float!
 }

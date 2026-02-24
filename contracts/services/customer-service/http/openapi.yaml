@@ -1,10 +1,33 @@
 openapi: 3.0.3
 info:
   title: Customer Service API
-  version: 1.0.0
+  version: 1.1.0
 servers:
   - url: https://customer.internal.example.com
 paths:
+  /customers:
+    post:
+      summary: Create a customer profile
+      operationId: createCustomer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateCustomerRequest'
+      responses:
+        '201':
+          description: Customer created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Customer'
+        '400':
+          description: Invalid payload
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
   /customers/{customerId}:
     get:
       summary: Fetch a customer profile
@@ -25,6 +48,24 @@ paths:
         '404':
           description: Customer not found
   /customers/{customerId}/preferences:
+    get:
+      summary: Fetch customer preferences
+      operationId: getPreferences
+      parameters:
+        - name: customerId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Customer preferences
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomerPreferences'
+        '404':
+          description: Customer not found
     patch:
       summary: Update customer preferences
       operationId: updatePreferences
@@ -55,6 +96,18 @@ paths:
                 $ref: '#/components/schemas/ErrorResponse'
 components:
   schemas:
+    CreateCustomerRequest:
+      type: object
+      required: [email, tier, preferences]
+      properties:
+        email:
+          type: string
+          format: email
+        tier:
+          type: string
+          enum: [STANDARD, GOLD, PLATINUM]
+        preferences:
+          $ref: '#/components/schemas/CustomerPreferences'
     Customer:
       type: object
       required: [id, email, tier, preferences]

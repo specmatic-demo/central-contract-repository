@@ -1,7 +1,7 @@
 openapi: 3.0.3
 info:
   title: Analytics Pipeline Query API
-  version: 1.0.0
+  version: 1.1.0
 servers:
   - url: https://analytics.internal.example.com
 paths:
@@ -29,6 +29,66 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+  /analytics/orders/trend:
+    get:
+      summary: Returns trend metrics for orders between dates
+      operationId: getOrderTrend
+      parameters:
+        - name: from
+          in: query
+          required: true
+          schema:
+            type: string
+            format: date
+        - name: to
+          in: query
+          required: true
+          schema:
+            type: string
+            format: date
+        - name: interval
+          in: query
+          required: true
+          schema:
+            type: string
+            enum: [DAY, WEEK, MONTH]
+      responses:
+        '200':
+          description: Trend data points
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderTrendResponse'
+        '400':
+          description: Invalid query parameters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /analytics/customers/tier-distribution:
+    get:
+      summary: Returns customer tier distribution snapshot
+      operationId: getCustomerTierDistribution
+      parameters:
+        - name: date
+          in: query
+          required: true
+          schema:
+            type: string
+            format: date
+      responses:
+        '200':
+          description: Tier distribution data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomerTierDistribution'
+        '400':
+          description: Invalid query parameters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
 components:
   schemas:
     DailyOrderSummary:
@@ -44,6 +104,50 @@ components:
           type: number
         avgOrderValue:
           type: number
+    OrderTrendResponse:
+      type: object
+      required: [from, to, interval, points]
+      properties:
+        from:
+          type: string
+          format: date
+        to:
+          type: string
+          format: date
+        interval:
+          type: string
+          enum: [DAY, WEEK, MONTH]
+        points:
+          type: array
+          items:
+            type: object
+            required: [bucketStart, totalOrders, grossRevenue]
+            properties:
+              bucketStart:
+                type: string
+                format: date
+              totalOrders:
+                type: integer
+              grossRevenue:
+                type: number
+    CustomerTierDistribution:
+      type: object
+      required: [date, tiers]
+      properties:
+        date:
+          type: string
+          format: date
+        tiers:
+          type: array
+          items:
+            type: object
+            required: [tier, customers]
+            properties:
+              tier:
+                type: string
+                enum: [STANDARD, GOLD, PLATINUM]
+              customers:
+                type: integer
     ErrorResponse:
       type: object
       required: [error]

@@ -1,7 +1,7 @@
 openapi: 3.0.3
 info:
   title: Catalog Service API
-  version: 1.0.0
+  version: 1.1.0
 servers:
   - url: https://catalog.internal.example.com
 paths:
@@ -59,6 +59,38 @@ paths:
                 $ref: '#/components/schemas/CatalogItem'
         '404':
           description: Item not found
+  /catalog/items/{sku}/availability:
+    get:
+      summary: Get availability status for a SKU
+      operationId: getCatalogItemAvailability
+      parameters:
+        - name: sku
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: SKU availability
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CatalogAvailability'
+        '404':
+          description: Item not found
+  /catalog/categories:
+    get:
+      summary: List catalog categories
+      operationId: listCatalogCategories
+      responses:
+        '200':
+          description: Available categories
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
 components:
   schemas:
     CatalogItem:
@@ -76,6 +108,19 @@ components:
         listPrice:
           type: number
           format: double
+    CatalogAvailability:
+      type: object
+      required: [sku, available, quantityOnHand, backorderable]
+      properties:
+        sku:
+          type: string
+        available:
+          type: boolean
+        quantityOnHand:
+          type: integer
+          minimum: 0
+        backorderable:
+          type: boolean
     ErrorResponse:
       type: object
       required: [message]

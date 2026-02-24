@@ -1,7 +1,7 @@
 openapi: 3.0.3
 info:
   title: Payment Service API
-  version: 1.0.0
+  version: 1.1.0
 servers:
   - url: https://payment.internal.example.com
 paths:
@@ -28,6 +28,68 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+  /payments/{paymentId}/capture:
+    post:
+      summary: Capture a previously authorized payment
+      operationId: capturePayment
+      parameters:
+        - name: paymentId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PaymentCaptureRequest'
+      responses:
+        '200':
+          description: Capture result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentCaptureResult'
+        '400':
+          description: Invalid capture request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Payment not found
+  /payments/{paymentId}/refund:
+    post:
+      summary: Refund a captured payment
+      operationId: refundPayment
+      parameters:
+        - name: paymentId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PaymentRefundRequest'
+      responses:
+        '200':
+          description: Refund result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentRefundResult'
+        '400':
+          description: Invalid refund request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Payment not found
 components:
   schemas:
     PaymentAuthorizationRequest:
@@ -57,6 +119,53 @@ components:
           enum: [AUTHORIZED, DECLINED]
         authorizedAmount:
           type: number
+    PaymentCaptureRequest:
+      type: object
+      required: [amount]
+      properties:
+        amount:
+          type: number
+          minimum: 0
+    PaymentCaptureResult:
+      type: object
+      required: [paymentId, status, capturedAmount, capturedAt]
+      properties:
+        paymentId:
+          type: string
+        status:
+          type: string
+          enum: [CAPTURED, CAPTURE_FAILED]
+        capturedAmount:
+          type: number
+        capturedAt:
+          type: string
+          format: date-time
+    PaymentRefundRequest:
+      type: object
+      required: [amount, reason]
+      properties:
+        amount:
+          type: number
+          minimum: 0.01
+        reason:
+          type: string
+          maxLength: 256
+    PaymentRefundResult:
+      type: object
+      required: [paymentId, refundId, status, refundedAmount, refundedAt]
+      properties:
+        paymentId:
+          type: string
+        refundId:
+          type: string
+        status:
+          type: string
+          enum: [REFUNDED, REFUND_FAILED]
+        refundedAmount:
+          type: number
+        refundedAt:
+          type: string
+          format: date-time
     ErrorResponse:
       type: object
       required: [error]
