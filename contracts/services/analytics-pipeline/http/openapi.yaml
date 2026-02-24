@@ -23,6 +23,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/DailyOrderSummary'
+        '400':
+          description: Invalid or missing date query parameter
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
 components:
   schemas:
     DailyOrderSummary:
@@ -38,3 +44,9 @@ components:
           type: number
         avgOrderValue:
           type: number
+    ErrorResponse:
+      type: object
+      required: [error]
+      properties:
+        error:
+          type: string
