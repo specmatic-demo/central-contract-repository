@@ -3,14 +3,23 @@ info:
   title: Notification Service MQTT Topics
   version: 1.1.0
 defaultContentType: application/json
+servers:
+  mqttServer:
+    host: localhost:1883
+    protocol: mqtt
+
 channels:
   userNotification:
     address: notification/user
+    servers:
+      - $ref: '#/servers/mqttServer'
     messages:
       userNotification:
         $ref: '#/components/messages/UserNotification'
   notificationDeliveryAck:
     address: notification/ack
+    servers:
+      - $ref: '#/servers/mqttServer'
     messages:
       deliveryAck:
         $ref: '#/components/messages/NotificationDeliveryAck'
