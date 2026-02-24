@@ -22,6 +22,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Order'
+        '400':
+          description: Invalid order payload
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
   /orders/{orderId}:
     get:
       summary: Get order details
@@ -89,3 +95,9 @@ components:
         unitPrice:
           type: number
           format: double
+    ErrorResponse:
+      type: object
+      required: [error]
+      properties:
+        error:
+          type: string
