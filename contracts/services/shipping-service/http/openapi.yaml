@@ -22,6 +22,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Shipment'
+        '400':
+          description: Invalid shipment request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
   /shipments/{shipmentId}:
     get:
       summary: Get shipment status
@@ -64,3 +70,9 @@ components:
         status:
           type: string
           enum: [CREATED, IN_TRANSIT, DELIVERED, DELAYED]
+    ErrorResponse:
+      type: object
+      required: [error]
+      properties:
+        error:
+          type: string
