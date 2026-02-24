@@ -34,6 +34,12 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/CatalogItem'
+        '400':
+          description: Invalid query parameters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
   /catalog/items/{sku}:
     get:
       summary: Fetch a catalog item by SKU
@@ -70,3 +76,9 @@ components:
         listPrice:
           type: number
           format: double
+    ErrorResponse:
+      type: object
+      required: [message]
+      properties:
+        message:
+          type: string
