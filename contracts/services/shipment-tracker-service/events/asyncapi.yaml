@@ -10,7 +10,7 @@ channels:
       shipmentStatusChanged:
         $ref: '#/components/messages/ShipmentStatusChanged'
   shipmentStatusRealtime:
-    address: shipment/status/realtime
+    address: shipment.status.realtime
     messages:
       shipmentStatusRealtime:
         $ref: '#/components/messages/ShipmentStatusRealtime'
@@ -24,7 +24,7 @@ operations:
       - $ref: '#/channels/shipmentStatusChanged/messages/shipmentStatusChanged'
   publishShipmentStatusRealtime:
     action: send
-    summary: Publishes shipment status updates for realtime clients over MQTT
+    summary: Publishes shipment status updates for downstream consumers
     channel:
       $ref: '#/channels/shipmentStatusRealtime'
     messages:
