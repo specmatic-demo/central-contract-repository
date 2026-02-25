@@ -24,7 +24,6 @@ Async contracts in this demo include both event streaming and request/reply patt
 - `services/customer-service/http/openapi.yaml`
 - `services/customer-service/events/asyncapi.yaml`
 - `services/catalog-service/http/openapi.yaml`
-- `services/catalog-service/rpc/catalog.proto`
 - `services/order-service/http/openapi.yaml`
 - `services/order-service/events/asyncapi.yaml`
 - `services/payment-service/http/openapi.yaml`
