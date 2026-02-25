@@ -10,7 +10,7 @@ channels:
       inventoryAdjustmentRequest:
         $ref: '#/components/messages/InventoryAdjustmentRequest'
   inventoryAdjusted:
-    address: inventory/adjusted
+    address: inventory.adjusted
     messages:
       inventoryAdjusted:
         $ref: '#/components/messages/InventoryAdjusted'
@@ -24,7 +24,7 @@ operations:
       - $ref: '#/channels/inventoryAdjustmentRequest/messages/inventoryAdjustmentRequest'
   publishInventoryAdjusted:
     action: send
-    summary: Publishes adjusted stock state to MQTT subscribers
+    summary: Publishes adjusted stock state to downstream consumers
     channel:
       $ref: '#/channels/inventoryAdjusted'
     messages:
