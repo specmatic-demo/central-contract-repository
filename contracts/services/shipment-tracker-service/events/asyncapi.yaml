@@ -1,0 +1,83 @@
+asyncapi: 3.0.0
+info:
+  title: Shipment Tracker Service Events
+  version: 1.0.0
+defaultContentType: application/json
+servers:
+  kafkaServer:
+    host: localhost:9092
+    protocol: kafka
+  mqttServer:
+    host: tcp://localhost:1883
+    protocol: mqtt
+channels:
+  shipmentStatusChanged:
+    address: shipment.status.changed
+    servers:
+      - $ref: '#/servers/kafkaServer'
+    messages:
+      shipmentStatusChanged:
+        $ref: '#/components/messages/ShipmentStatusChanged'
+  shipmentStatusRealtime:
+    address: shipment/status/realtime
+    servers:
+      - $ref: '#/servers/mqttServer'
+    messages:
+      shipmentStatusRealtime:
+        $ref: '#/components/messages/ShipmentStatusRealtime'
+operations:
+  receiveShipmentStatusChanged:
+    action: receive
+    summary: Receives shipment status changes from logistics systems over Kafka
+    channel:
+      $ref: '#/channels/shipmentStatusChanged'
+    messages:
+      - $ref: '#/channels/shipmentStatusChanged/messages/shipmentStatusChanged'
+  publishShipmentStatusRealtime:
+    action: send
+    summary: Publishes shipment status updates for realtime clients over MQTT
+    channel:
+      $ref: '#/channels/shipmentStatusRealtime'
+    messages:
+      - $ref: '#/channels/shipmentStatusRealtime/messages/shipmentStatusRealtime'
+components:
+  messages:
+    ShipmentStatusChanged:
+      payload:
+        type: object
+        required: [eventId, orderId, shipmentId, status, occurredAt]
+        properties:
+          eventId:
+            type: string
+          orderId:
+            type: string
+          shipmentId:
+            type: string
+          status:
+            type: string
+            enum: [CREATED, PICKED_UP, IN_TRANSIT, OUT_FOR_DELIVERY, DELIVERED, FAILED]
+          occurredAt:
+            type: string
+            format: date-time
+          locationCode:
+            type: string
+    ShipmentStatusRealtime:
+      payload:
+        type: object
+        required: [eventId, orderId, shipmentId, status, publishedAt]
+        properties:
+          eventId:
+            type: string
+          orderId:
+            type: string
+          shipmentId:
+            type: string
+          status:
+            type: string
+            enum: [CREATED, PICKED_UP, IN_TRANSIT, OUT_FOR_DELIVERY, DELIVERED, FAILED]
+          publishedAt:
+            type: string
+            format: date-time
+          eta:
+            type: string
+            format: date-time
