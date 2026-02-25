@@ -3,25 +3,14 @@ info:
   title: Shipment Tracker Service Events
   version: 1.0.0
 defaultContentType: application/json
-servers:
-  kafkaServer:
-    host: localhost:9092
-    protocol: kafka
-  mqttServer:
-    host: tcp://localhost:1883
-    protocol: mqtt
 channels:
   shipmentStatusChanged:
     address: shipment.status.changed
-    servers:
-      - $ref: '#/servers/kafkaServer'
     messages:
       shipmentStatusChanged:
         $ref: '#/components/messages/ShipmentStatusChanged'
   shipmentStatusRealtime:
     address: shipment/status/realtime
-    servers:
-      - $ref: '#/servers/mqttServer'
     messages:
       shipmentStatusRealtime:
         $ref: '#/components/messages/ShipmentStatusRealtime'

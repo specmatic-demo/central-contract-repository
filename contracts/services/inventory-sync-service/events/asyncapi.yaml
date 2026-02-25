@@ -3,25 +3,14 @@ info:
   title: Inventory Sync Service Events
   version: 1.0.0
 defaultContentType: application/json
-servers:
-  kafkaServer:
-    host: localhost:9092
-    protocol: kafka
-  mqttServer:
-    host: tcp://localhost:1883
-    protocol: mqtt
 channels:
   inventoryAdjustmentRequest:
     address: inventory.adjustment.request
-    servers:
-      - $ref: '#/servers/kafkaServer'
     messages:
       inventoryAdjustmentRequest:
         $ref: '#/components/messages/InventoryAdjustmentRequest'
   inventoryAdjusted:
     address: inventory/adjusted
-    servers:
-      - $ref: '#/servers/mqttServer'
     messages:
       inventoryAdjusted:
         $ref: '#/components/messages/InventoryAdjusted'
