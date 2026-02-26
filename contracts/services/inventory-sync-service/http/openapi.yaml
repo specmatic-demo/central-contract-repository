@@ -1,0 +1,71 @@
+openapi: 3.0.3
+info:
+  title: Inventory Sync Service API
+  version: 1.0.0
+servers:
+  - url: https://inventory-sync.internal.example.com
+paths:
+  /inventory/adjustments:
+    post:
+      summary: Ingest an inventory adjustment request over HTTP
+      operationId: publishInventoryAdjustment
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InventoryAdjustmentRequest'
+      responses:
+        '202':
+          description: Adjustment accepted and published to downstream backends
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InventoryAdjusted'
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+components:
+  schemas:
+    InventoryAdjustmentRequest:
+      type: object
+      required: [requestId, sku, adjustmentDelta, reason, requestedAt]
+      properties:
+        requestId:
+          type: string
+        sku:
+          type: string
+        adjustmentDelta:
+          type: integer
+        reason:
+          type: string
+          enum: [ORDER_PLACED, ORDER_CANCELLED, RETURN_RECEIVED, MANUAL_RECONCILIATION]
+        requestedAt:
+          type: string
+    InventoryAdjusted:
+      type: object
+      required: [eventId, requestId, sku, quantityOnHand, available, publishedAt]
+      properties:
+        eventId:
+          type: string
+        requestId:
+          type: string
+        sku:
+          type: string
+        quantityOnHand:
+          type: integer
+          minimum: 0
+        available:
+          type: boolean
+        publishedAt:
+          type: string
+          format: date-time
+    ErrorResponse:
+      type: object
+      required: [error]
+      properties:
+        error:
+          type: string
