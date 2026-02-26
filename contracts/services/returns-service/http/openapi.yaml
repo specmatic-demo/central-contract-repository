@@ -1,0 +1,157 @@
+openapi: 3.0.3
+info:
+  title: Returns Service API
+  version: 1.0.0
+servers:
+  - url: https://returns.internal.example.com
+paths:
+  /returns:
+    post:
+      summary: Initiate a return request for an existing order
+      operationId: initiateReturn
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReturnInitiationRequest'
+      responses:
+        '202':
+          description: Return accepted for evaluation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReturnSummary'
+        '400':
+          description: Invalid return request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /returns/{returnId}:
+    get:
+      summary: Fetch return status
+      operationId: getReturn
+      parameters:
+        - name: returnId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Return found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReturnSummary'
+        '404':
+          description: Return not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /returns/{returnId}/decision:
+    post:
+      summary: Approve or reject a return after evaluation
+      operationId: decideReturn
+      parameters:
+        - name: returnId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReturnDecisionRequest'
+      responses:
+        '200':
+          description: Decision recorded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReturnSummary'
+        '400':
+          description: Invalid decision payload
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Return not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+components:
+  schemas:
+    ReturnLineItem:
+      type: object
+      required: [sku, quantity, reasonCode]
+      properties:
+        sku:
+          type: string
+        quantity:
+          type: integer
+          minimum: 1
+        reasonCode:
+          type: string
+          enum: [DAMAGED, DEFECTIVE, WRONG_ITEM, NO_LONGER_NEEDED]
+    ReturnInitiationRequest:
+      type: object
+      required: [requestId, orderId, customerId, items, requestedAt]
+      properties:
+        requestId:
+          type: string
+        orderId:
+          type: string
+        customerId:
+          type: string
+        items:
+          type: array
+          minItems: 1
+          items:
+            $ref: '#/components/schemas/ReturnLineItem'
+        requestedAt:
+          type: string
+          format: date-time
+    ReturnDecisionRequest:
+      type: object
+      required: [decision, decidedAt]
+      properties:
+        decision:
+          type: string
+          enum: [APPROVED, REJECTED]
+        reasonCode:
+          type: string
+        decidedAt:
+          type: string
+          format: date-time
+    ReturnSummary:
+      type: object
+      required: [returnId, orderId, customerId, status, updatedAt]
+      properties:
+        returnId:
+          type: string
+        orderId:
+          type: string
+        customerId:
+          type: string
+        status:
+          type: string
+          enum: [PENDING_REVIEW, APPROVED, REJECTED, REFUND_INITIATED, COMPLETED]
+        refundAmount:
+          type: number
+          minimum: 0
+        updatedAt:
+          type: string
+          format: date-time
+    ErrorResponse:
+      type: object
+      required: [error]
+      properties:
+        error:
+          type: string

@@ -35,3 +35,7 @@ Async contracts in this demo include both event streaming and request/reply patt
 - `services/notification-service/events/asyncapi.yaml`
 - `services/analytics-pipeline/http/openapi.yaml`
 - `services/analytics-pipeline/events/consumed-events.md`
+- `services/returns-service/http/openapi.yaml`
+- `services/returns-service/events/asyncapi.yaml`
+- `services/inventory-projection-service/http/openapi.yaml`
+- `services/inventory-projection-service/events/asyncapi.yaml`

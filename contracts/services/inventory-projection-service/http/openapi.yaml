@@ -1,0 +1,86 @@
+openapi: 3.0.3
+info:
+  title: Inventory Projection Service API
+  version: 1.0.0
+servers:
+  - url: https://inventory-projection.internal.example.com
+paths:
+  /inventory-projections/{sku}:
+    get:
+      summary: Get the latest inventory projection for a SKU
+      operationId: getInventoryProjection
+      parameters:
+        - name: sku
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Projection found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InventoryProjection'
+        '404':
+          description: SKU not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /inventory-projections/low-stock:
+    get:
+      summary: List SKUs currently below reorder threshold
+      operationId: listLowStockProjections
+      parameters:
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 500
+            default: 50
+      responses:
+        '200':
+          description: Low stock projection list
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [items]
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/InventoryProjection'
+components:
+  schemas:
+    InventoryProjection:
+      type: object
+      required: [sku, quantityOnHand, reserved, available, reorderThreshold, updatedAt]
+      properties:
+        sku:
+          type: string
+        quantityOnHand:
+          type: integer
+          minimum: 0
+        reserved:
+          type: integer
+          minimum: 0
+        available:
+          type: integer
+        reorderThreshold:
+          type: integer
+          minimum: 0
+        lowStock:
+          type: boolean
+        updatedAt:
+          type: string
+          format: date-time
+    ErrorResponse:
+      type: object
+      required: [error]
+      properties:
+        error:
+          type: string

@@ -1,0 +1,98 @@
+asyncapi: 3.0.0
+info:
+  title: Returns Service RabbitMQ Events
+  version: 1.0.0
+defaultContentType: application/json
+servers:
+  rabbitmq:
+    host: localhost:5672
+    protocol: amqp
+channels:
+  returnEvaluationRequest:
+    address: return.evaluation.request
+    messages:
+      returnEvaluationRequest:
+        $ref: '#/components/messages/ReturnEvaluationRequest'
+  returnEvaluationReply:
+    address: return.evaluation.reply
+    messages:
+      returnEvaluationReply:
+        $ref: '#/components/messages/ReturnEvaluationReply'
+  returnStatusChanged:
+    address: return.status.changed
+    messages:
+      returnStatusChanged:
+        $ref: '#/components/messages/ReturnStatusChanged'
+operations:
+  receiveReturnEvaluationRequest:
+    action: receive
+    summary: Receives return evaluation commands from upstream workflow over RabbitMQ
+    channel:
+      $ref: '#/channels/returnEvaluationRequest'
+    messages:
+      - $ref: '#/channels/returnEvaluationRequest/messages/returnEvaluationRequest'
+  sendReturnEvaluationReply:
+    action: send
+    summary: Sends evaluation outcome correlated to the incoming request
+    channel:
+      $ref: '#/channels/returnEvaluationReply'
+    messages:
+      - $ref: '#/channels/returnEvaluationReply/messages/returnEvaluationReply'
+  sendReturnStatusChanged:
+    action: send
+    summary: Publishes return state transitions for downstream consumers
+    channel:
+      $ref: '#/channels/returnStatusChanged'
+    messages:
+      - $ref: '#/channels/returnStatusChanged/messages/returnStatusChanged'
+components:
+  messages:
+    ReturnEvaluationRequest:
+      payload:
+        type: object
+        required: [requestId, returnId, orderId, customerId, requestedAt]
+        properties:
+          requestId:
+            type: string
+          returnId:
+            type: string
+          orderId:
+            type: string
+          customerId:
+            type: string
+          requestedAt:
+            type: string
+            format: date-time
+    ReturnEvaluationReply:
+      payload:
+        type: object
+        required: [requestId, returnId, decision, repliedAt]
+        properties:
+          requestId:
+            type: string
+          returnId:
+            type: string
+          decision:
+            type: string
+            enum: [APPROVED, REJECTED]
+          reasonCode:
+            type: string
+          repliedAt:
+            type: string
+            format: date-time
+    ReturnStatusChanged:
+      payload:
+        type: object
+        required: [eventId, returnId, fromStatus, toStatus, changedAt]
+        properties:
+          eventId:
+            type: string
+          returnId:
+            type: string
+          fromStatus:
+            type: string
+          toStatus:
+            type: string
+          changedAt:
+            type: string
+            format: date-time

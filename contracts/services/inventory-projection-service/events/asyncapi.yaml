@@ -1,0 +1,99 @@
+asyncapi: 3.0.0
+info:
+  title: Inventory Projection Service Events
+  version: 1.0.0
+defaultContentType: application/json
+channels:
+  inventoryAdjusted:
+    address: inventory.adjusted
+    messages:
+      inventoryAdjusted:
+        $ref: '#/components/messages/InventoryAdjusted'
+  orderCreated:
+    address: order.created
+    messages:
+      orderCreated:
+        $ref: '#/components/messages/OrderCreated'
+  inventoryLowStock:
+    address: inventory.low.stock
+    messages:
+      inventoryLowStock:
+        $ref: '#/components/messages/InventoryLowStock'
+operations:
+  receiveInventoryAdjusted:
+    action: receive
+    summary: Ingests inventory adjusted events to update projections
+    channel:
+      $ref: '#/channels/inventoryAdjusted'
+    messages:
+      - $ref: '#/channels/inventoryAdjusted/messages/inventoryAdjusted'
+  receiveOrderCreated:
+    action: receive
+    summary: Ingests new orders to adjust reserved inventory
+    channel:
+      $ref: '#/channels/orderCreated'
+    messages:
+      - $ref: '#/channels/orderCreated/messages/orderCreated'
+  sendInventoryLowStock:
+    action: send
+    summary: Publishes low stock alerts to downstream subscribers
+    channel:
+      $ref: '#/channels/inventoryLowStock'
+    messages:
+      - $ref: '#/channels/inventoryLowStock/messages/inventoryLowStock'
+components:
+  messages:
+    InventoryAdjusted:
+      payload:
+        type: object
+        required: [eventId, requestId, sku, quantityOnHand, available, publishedAt]
+        properties:
+          eventId:
+            type: string
+          requestId:
+            type: string
+          sku:
+            type: string
+          quantityOnHand:
+            type: integer
+            minimum: 0
+          available:
+            type: boolean
+          publishedAt:
+            type: string
+            format: date-time
+    OrderCreated:
+      payload:
+        type: object
+        required: [eventId, orderId, customerId, totalAmount, createdAt]
+        properties:
+          eventId:
+            type: string
+          orderId:
+            type: string
+          customerId:
+            type: string
+          totalAmount:
+            type: number
+          createdAt:
+            type: string
+            format: date-time
+    InventoryLowStock:
+      payload:
+        type: object
+        required: [eventId, sku, available, reorderThreshold, publishedAt]
+        properties:
+          eventId:
+            type: string
+          sku:
+            type: string
+          available:
+            type: integer
+          reorderThreshold:
+            type: integer
+          severity:
+            type: string
+            enum: [MEDIUM, HIGH, CRITICAL]
+          publishedAt:
+            type: string
+            format: date-time
