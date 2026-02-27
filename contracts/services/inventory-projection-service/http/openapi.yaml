@@ -54,6 +54,12 @@ paths:
                     type: array
                     items:
                       $ref: '#/components/schemas/InventoryProjection'
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
 components:
   schemas:
     InventoryProjection:
