@@ -1,25 +1,25 @@
 asyncapi: 3.0.0
 info:
-  title: Notification Service MQTT Topics
+  title: Notification Service Kafka Topics
   version: 1.1.0
 defaultContentType: application/json
 servers:
-  mqttServer:
-    host: tcp://localhost:1883
-    protocol: mqtt
+  kafkaServer:
+    host: localhost:9092
+    protocol: kafka
 
 channels:
   userNotification:
-    address: notification/user
+    address: notification.user
     servers:
-      - $ref: '#/servers/mqttServer'
+      - $ref: '#/servers/kafkaServer'
     messages:
       userNotification:
         $ref: '#/components/messages/UserNotification'
   notificationDeliveryAck:
-    address: notification/ack
+    address: notification.ack
     servers:
-      - $ref: '#/servers/mqttServer'
+      - $ref: '#/servers/kafkaServer'
     messages:
       deliveryAck:
         $ref: '#/components/messages/NotificationDeliveryAck'

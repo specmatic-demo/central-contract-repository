@@ -7,7 +7,7 @@ This folder organizes contracts by service and protocol.
 - `services/<service-name>/http/openapi.yaml` for HTTP APIs
 - `services/<service-name>/graphql/schema.graphql` for GraphQL APIs
 - `services/<service-name>/rpc/*.proto` for gRPC APIs
-- `services/<service-name>/events/*asyncapi.yaml` for Kafka, JMS, MQTT topics/queues
+- `services/<service-name>/events/*asyncapi.yaml` for Kafka, JMS, AMQP topics/queues
 
 ## Async Request/Reply Convention
 
