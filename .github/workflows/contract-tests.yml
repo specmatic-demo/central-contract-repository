@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  specmatic:
+  contract-tests:
     uses: specmatic-demo/.github/.github/workflows/specmatic-reports.yml@main
     with:
       run_project_tests: false
