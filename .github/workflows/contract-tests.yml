@@ -1,0 +1,15 @@
+name: Specmatic Contract Reports
+
+on:
+  push:
+    branches: [main]
+  schedule:
+    - cron: "10 0 * * *"
+  workflow_dispatch:
+
+jobs:
+  specmatic:
+    uses: specmatic-demo/.github/.github/workflows/specmatic-reports.yml@main
+    with:
+      run_project_tests: false
+    secrets: inherit
